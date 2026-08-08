@@ -867,9 +867,13 @@
   const db = firebase.firestore();
 
   const form = document.getElementById("quoteForm");
-
-  form.addEventListener("submit", async (e) => {
+  const toast = document.getElementById('toast');
+  form.addEventListener('submit', (e) => {
     e.preventDefault();
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3400);
+    form.reset();
+  });
 
     const fullnameVal = document.getElementById("fullname").value.trim();
     const phoneVal = document.getElementById("phone").value.trim();
@@ -894,8 +898,6 @@
         createdAt: new Date()
       });
 
-      alert("Message Sent Successfully!");
-      form.reset();
 
     } catch (err) {
       console.error(err);
