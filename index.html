@@ -848,48 +848,58 @@
       }
     });
   });
-</script>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAubS5tvkyZlDi1AgCnAiDf_cQo425Qzcc",
-  authDomain: "my-startup-7063b.firebaseapp.com",
-  projectId: "my-startup-7063b",
-  storageBucket: "my-startup-7063b.firebasestorage.app",
-  messagingSenderId: "26616497192",
-  appId: "1:26616497192:web:4f7f468699c6bb53d4611d"
-};
+  <script>
+  firebase.initializeApp({
+    apiKey: "AIzaSyAubS5tvkyZlDi1AgCnAiDf_cQo425Qzcc",
+    authDomain: "my-startup-7063b.firebaseapp.com",
+    projectId: "my-startup-7063b",
+    storageBucket: "my-startup-7063b.firebasestorage.app",
+    messagingSenderId: "26616497192",
+    appId: "1:26616497192:web:4f7f468699c6bb53d4611d"
+  });
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+  const db = firebase.firestore();
 
-const form = document.getElementById("quoteForm");
+  const form = document.getElementById("quoteForm");
 
-form.addEventListener("submit", async (e) => {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    try {
-        await addDoc(collection(db, "quotes"), {
-            fullname: document.getElementById("fullname").value,
-            phone: document.getElementById("phone").value,
-            email: document.getElementById("email").value,
-            movingFrom: document.getElementById("from").value,
-            movingTo: document.getElementById("to").value,
-            moveSize: document.getElementById("size").value,
-            createdAt: new Date()
-        });
+    const fullnameVal = document.getElementById("fullname").value.trim();
+    const phoneVal = document.getElementById("phone").value.trim();
+    const emailVal = document.getElementById("email").value.trim();
+    const fromVal = document.getElementById("from").value.trim();
+    const toVal = document.getElementById("to").value.trim();
+    const sizeVal = document.getElementById("size").value.trim();
 
-        alert("Quote submitted successfully!");
-        form.reset();
-
-    } catch(err) {
-        console.error(err);
+    if (!fullnameVal || !phoneVal || !emailVal || !fromVal || !toVal || !sizeVal) {
+      alert("Please fill all required fields");
+      return;
     }
-    
-});
+
+    try {
+      await db.collection("contact").add({
+        name: fullnameVal,
+        phone: phoneVal,
+        email: emailVal,
+        from: fromVal,
+        to: toVal,
+        size: sizeVal,
+        createdAt: new Date()
+      });
+
+      alert("Message Sent Successfully!");
+      form.reset();
+
+    } catch (err) {
+      console.error(err);
+      alert("Error sending message");
+    }
+  });
 </script>
 
 </body>
