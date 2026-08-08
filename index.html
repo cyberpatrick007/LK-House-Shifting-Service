@@ -832,7 +832,14 @@
   }, 2200);
 
   // form submit -> toast
-  
+  const form = document.getElementById('quoteForm');
+  const toast = document.getElementById('toast');
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3400);
+    form.reset();
+  });
 
   // smooth anchor scroll offset for fixed header
   document.querySelectorAll('a[href^="#"]').forEach(a => {
@@ -867,13 +874,6 @@
   const db = firebase.firestore();
 
   const form = document.getElementById("quoteForm");
-  const toast = document.getElementById('toast');
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 3400);
-    form.reset();
-  });
 
     const fullnameVal = document.getElementById("fullname").value.trim();
     const phoneVal = document.getElementById("phone").value.trim();
