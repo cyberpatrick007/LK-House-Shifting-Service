@@ -858,26 +858,29 @@
 </script>
 
  <!-- FIREBASE -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
-  <script>
- const firebaseConfig = {
-    apiKey: "AIzaSyDJu2Vp8SS48aEbhMGb3A-oXvixzml0qVE",
-    authDomain: "lookman-fdfd0.firebaseapp.com",
-    databaseURL: "https://lookman-fdfd0-default-rtdb.firebaseio.com",
-    projectId: "lookman-fdfd0",
-    storageBucket: "lookman-fdfd0.firebasestorage.app",
-    messagingSenderId: "528920211759",
-    appId: "1:528920211759:web:cffb95a746062a449971da",
-    measurementId: "G-3Y3TG3WEX5"
-  };
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDJu2Vp8SS48aEbhMGb3A-oXvixzml0qVE",
+  authDomain: "lookman-fdfd0.firebaseapp.com",
+  databaseURL: "https://lookman-fdfd0-default-rtdb.firebaseio.com",
+  projectId: "lookman-fdfd0",
+  storageBucket: "lookman-fdfd0.firebasestorage.app",
+  messagingSenderId: "528920211759",
+  appId: "1:528920211759:web:cffb95a746062a449971da",
+  measurementId: "G-3Y3TG3WEX5"
+};
 
-  const db = firebase.firestore();
+firebase.initializeApp(firebaseConfig);
 
-  const form = document.getElementById("quoteForm");
+const db = firebase.firestore();
 
-  form.addEventListener("submit", async (e) => {
+const form = document.getElementById("quoteForm");
+const toast = document.getElementById("toast");
+
+form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const fullnameVal = document.getElementById("fullname").value.trim();
@@ -887,27 +890,36 @@
     const toVal = document.getElementById("to").value.trim();
     const sizeVal = document.getElementById("size").value.trim();
 
-    if (!fullnameVal || !phoneVal || !emailVal || !fromVal || !toVal || !sizeVal) {
-      alert("Please fill all required fields");
-      return;
+    if (!fullnameVal || !phoneVal || !emailVal ||
+        !fromVal || !toVal || !sizeVal) {
+        alert("Please fill all required fields");
+        return;
     }
 
     try {
-      await db.collection("quoteForm").add({
-        name: fullnameVal,
-        phone: phoneVal,
-        email: emailVal,
-        from: fromVal,
-        to: toVal,
-        size: sizeVal,
-        createdAt: new Date()
-      });
+        await db.collection("quoteForm").add({
+            name: fullnameVal,
+            phone: phoneVal,
+            email: emailVal,
+            from: fromVal,
+            to: toVal,
+            size: sizeVal,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        toast.classList.add("show");
+
+        setTimeout(() => {
+            toast.classList.remove("show");
+        }, 3400);
+
+        form.reset();
 
     } catch (err) {
-      console.error(err);
-      alert("Error sending message");
+        console.error("Firebase error:", err);
+        alert("Error sending quote. Please try again.");
     }
-  });
+});
 </script>
 
 </body>
