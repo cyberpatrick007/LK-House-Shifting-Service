@@ -762,7 +762,7 @@
         </div>
       </div>
 
-      <form class="quote-form reveal" id="quoteForm" id="form">
+        <form class="quote-form reveal" id="quoteForm">
         <h4>Get your free quote</h4>
         <p>Fill this in — no commitment, just a number.</p>
         <div class="form-row">
@@ -832,14 +832,6 @@
   }, 2200);
 
   // form submit -> toast
-  const form = document.getElementById('quoteForm');
-  const toast = document.getElementById('toast');
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 3400);
-    form.reset();
-  });
 
   // smooth anchor scroll offset for fixed header
   document.querySelectorAll('a[href^="#"]').forEach(a => {
@@ -858,68 +850,114 @@
 </script>
 
  <!-- FIREBASE -->
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyDJu2Vp8SS48aEbhMGb3A-oXvixzml0qVE",
-  authDomain: "lookman-fdfd0.firebaseapp.com",
-  databaseURL: "https://lookman-fdfd0-default-rtdb.firebaseio.com",
-  projectId: "lookman-fdfd0",
-  storageBucket: "lookman-fdfd0.firebasestorage.app",
-  messagingSenderId: "528920211759",
-  appId: "1:528920211759:web:cffb95a746062a449971da",
-  measurementId: "G-3Y3TG3WEX5"
-};
+  <!-- FIREBASE -->
+<script type="module">
 
-firebase.initializeApp(firebaseConfig);
+  // Firebase SDK
+  import { initializeApp } 
+    from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
 
-const db = firebase.firestore();
+  import { getFirestore, collection, addDoc, serverTimestamp } 
+    from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 
-const form = document.getElementById("quoteForm");
-const toast = document.getElementById("toast");
 
-form.addEventListener("submit", async (e) => {
+  // YOUR FIREBASE CONFIG
+  const firebaseConfig = {
+    apiKey: "AIzaSyCRYgkMXORCNhRi3CI508iyCvPQpn-eQ1I",
+    authDomain: "lk-house-shifting-service.firebaseapp.com",
+    projectId: "lk-house-shifting-service",
+    storageBucket: "lk-house-shifting-service.firebasestorage.app",
+    messagingSenderId: "724342802989",
+    appId: "1:724342802989:web:d5bf1aca27623ab2b9c6a4"
+  };
+
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+
+  // Initialize Firestore
+  const db = getFirestore(app);
+
+
+  // Contact / Quote form
+  const form = document.getElementById("quoteForm");
+  const toast = document.getElementById("toast");
+
+
+  form.addEventListener("submit", async (e) => {
+
     e.preventDefault();
 
-    const fullnameVal = document.getElementById("fullname").value.trim();
-    const phoneVal = document.getElementById("phone").value.trim();
-    const emailVal = document.getElementById("email").value.trim();
-    const fromVal = document.getElementById("from").value.trim();
-    const toVal = document.getElementById("to").value.trim();
-    const sizeVal = document.getElementById("size").value.trim();
+    const submitButton = form.querySelector("button[type='submit']");
 
-    if (!fullnameVal || !phoneVal || !emailVal ||
-        !fromVal || !toVal || !sizeVal) {
-        alert("Please fill all required fields");
-        return;
-    }
+    // Prevent multiple submissions
+    submitButton.disabled = true;
+    submitButton.textContent = "Sending...";
+
+
+    // Get form values
+    const fullName = document.getElementById("fullname").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const movingFrom = document.getElementById("from").value.trim();
+    const movingTo = document.getElementById("to").value.trim();
+    const moveSize = document.getElementById("size").value;
+
 
     try {
-        await db.collection("quoteForm").add({
-            name: fullnameVal,
-            phone: phoneVal,
-            email: emailVal,
-            from: fromVal,
-            to: toVal,
-            size: sizeVal,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
 
-        toast.classList.add("show");
+      // Save information to Firestore
+      await addDoc(collection(db, "quoteRequests"), {
 
-        setTimeout(() => {
-            toast.classList.remove("show");
-        }, 3400);
+        fullName: fullName,
+        phone: phone,
+        email: email,
+        movingFrom: movingFrom,
+        movingTo: movingTo,
+        moveSize: moveSize,
 
-        form.reset();
+        status: "new",
 
-    } catch (err) {
-        console.error("Firebase error:", err);
-        alert("Error sending quote. Please try again.");
+        createdAt: serverTimestamp()
+
+      });
+
+
+      // Success message
+      toast.textContent = "Quote request sent — we'll be in touch shortly!";
+      toast.classList.add("show");
+
+      // Clear form
+      form.reset();
+
+
+      // Hide toast
+      setTimeout(() => {
+        toast.classList.remove("show");
+      }, 3400);
+
+
+    } catch (error) {
+
+      console.error("Firebase error:", error);
+
+      toast.textContent = "Something went wrong. Please try again.";
+      toast.classList.add("show");
+
+      setTimeout(() => {
+        toast.classList.remove("show");
+      }, 3400);
+
     }
-});
+
+
+    // Enable button again
+    submitButton.disabled = false;
+    submitButton.textContent = "Request Free Quote";
+
+  });
+
 </script>
 
 </body>
